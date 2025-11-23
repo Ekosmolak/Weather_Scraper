@@ -12,7 +12,7 @@ class DBOperations:
         """
         self.db_name = db_name
 
-    # ----------------------------------------------------------------------
+
     def initialize_db(self):
         """
         Initialzes the weather database table if it does not exist already.
@@ -32,7 +32,7 @@ class DBOperations:
         with DBCM(self.db_name) as cursor:
             cursor.execute(create_sql)
 
-    # ----------------------------------------------------------------------
+
     def purge_data(self):
         """
         purge_data deletes all the rows in the weather table withiout
@@ -41,7 +41,7 @@ class DBOperations:
         with DBCM(self.db_name) as cursor:
             cursor.execute("DELETE FROM weather;")
 
-    # ----------------------------------------------------------------------
+
     def save_data(self, weather_data: dict, location="Winnipeg"):
         """
         save_data saves all the weather data into the weather database.
@@ -53,7 +53,13 @@ class DBOperations:
 
         with DBCM(self.db_name) as cursor:
             for date, temperatures in weather_data.items():
-                min_temp, max_temp, avg_temp = temperatures
+                try:
+                    min_temp = float(temperatures["Min"])
+                    max_temp = float(temperatures["Max"])
+                    avg_temp = float(temperatures["Mean"])
+                except:
+                    continue
+
                 cursor.execute(sql, (
                     date,
                     location,
@@ -62,14 +68,14 @@ class DBOperations:
                     avg_temp
                 ))
 
-    # ----------------------------------------------------------------------
+
     def fetch_data(self, start_date=None, end_date=None, location="Winnipeg"):
         """
         fetch_data returns all the rows needed.
         """
 
         sql = """
-        SELECT sample_date, min_temp, max_temp, avg_temp
+        SELECT weather_date, min_temp, max_temp, avg_temp
         FROM weather
         WHERE location = ?
         """

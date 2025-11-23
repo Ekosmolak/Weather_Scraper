@@ -15,13 +15,17 @@ class DBCM:
         self.cursor = None
 
     def __enter__(self):
-        """"""
+        """
+        Enters the runtinme and makes a connection to the daatabase.
+        """
         self.conn = sqlite3.connect(self.db_name)
         self.cursor = self.conn.cursor()
         return self.cursor
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """"""
+        """
+        Exits the runtime and closes the database connection
+        """
         if self.conn:
             if exc_type is None:
                 self.conn.commit()
